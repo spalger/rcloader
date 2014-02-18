@@ -20,7 +20,7 @@ function RcLoader(name, userConfig, finderConfig) {
       lookup: false
     };
   } else {
-    config = _.defaults(userConfig || {}, {
+    config = _.defaults({}, userConfig || {}, {
       lookup: true
     });
   }
