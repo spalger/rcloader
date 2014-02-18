@@ -2,42 +2,54 @@
 
 [![Travis CI](https://travis-ci.org/spenceralger/rcloader.png)](https://travis-ci.org/spenceralger/rcloader)
 
-A helper module for build system plugins that need to fetch .{{app}}rc files themselves.
+For build system plugins that need to fetch relative config files (like .jshintrc).
 
 ## Features
   - Find the closest config file (like .jshintrc) relative to the file you are linting
-  - User can specify overrides.
-  - User can simply disable config file lookup.
-  - Allow users to specifiy the file to use explicitely.
+  - Lookups are cahched to limit IO operations
+  - Accepts input directly from plugin consumers to
+    - specifiy a file that should always be used
+    - specify overrides
+    - disable file lookup
 
-## install
+## Install
 ```
 npm install rcloader
 ```
 
 ## Use
-I imagine most people will use this for gulp/grunt plugins.
+This plugin was written to specifcally address this issue for a couple gulp plugins.
 
 ### within a gulp plugin
 ```
 var RcLoader = require('rcloader');
 var map = require('map-stream');
 
-module.exports = function MyGulpPlugin(userOptions) {
-  var rcLoader = new RcFinder('.mypluginrc', userOptions);
+module.exports = function MyGulpPlugin(options) {
+  var rcLoader = new RcFinder('.configfilename', options);
 
   return map(function (file, cb) {
     // get the options for this file specifically
-    var fileOpts = rcLoader.for(file.path);
-    // do something cool
-    cb();
+    rcLoader.for(file.path, function (err, fileOpts) {
+      // do something cool
+
+      // send the file along
+      cb(null, file);
+    });
   });
 };
 ```
 
-To get the options asynchronously just supply a callback as the second parameter.
+If you would rather, just skip the callback and it will run synchronously.
 ```
-rcLoader.for(file.path, function (err, fileOpts) {
-  // use fileOpts
-});
+var fileOpts = rcLoader.for(file.path, options);
 ```
+
+## Options
+The second argument to the `RcFinder` constructor should be the options that plugin consumers define, and they can take can take a few different forms.
+
+**If the user specifies a string**, it is used as a path to the only config file that they care about. Calling `rcLoader.for(path)` will always return a copy of the config file at that path.
+
+**If the user specifies an object**, the following keys will be striped from it and the remaining values will override values found in the config files.
+
+ - `lookup`, Boolean, Find the closest config file each time `.for()` is called. default is true, unless config is a path.

@@ -1,7 +1,7 @@
 {
   "name": "rcloader",
-  "version": "0.0.0",
-  "description": "load .___rc files",
+  "version": "0.0.1",
+  "description": "For build system plugins that need to fetch relative config files (like .jshintrc).",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -29,6 +29,7 @@
     "lodash": "~2.4.1"
   },
   "devDependencies": {
-    "should": "~3.1.2"
+    "should": "~3.1.2",
+    "mocha": "~1.17.1"
   }
 }
