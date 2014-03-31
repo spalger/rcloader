@@ -93,14 +93,15 @@ describe('RcLoader', function () {
         };
 
         if (path === fixtures.json) {
-          done = (function (_done) {
-            return function waitUntilRcDone(err, contents) {
-              // only call the original _done function once rc is done
-              if (stop[fixtures.rc]) _done(err, contents);
-              // if not done yet, delay again
-              else onAfterDone.push(waitUntilRcDone);
-            };
-          }(done));
+          done = _.partial(function forceCompletionOrder(origDone, err, contents) {
+            (function checkThatRcStopped() {
+              // only call the original done function once rc is done
+              if (stop[fixtures.rc]) origDone(err, contents);
+
+              // if not done yet then reschedule
+              else onAfterDone.push(checkThatRcStopped);
+            }());
+          }, done);
         }
 
         fs.readFile(path, done);
