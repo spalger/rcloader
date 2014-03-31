@@ -78,6 +78,7 @@ describe('RcLoader', function () {
       return t[0] * 1000 + t[1] / 1000;
     };
 
+    var onAfterDone = [];
     // loader with a defaults file which also looks up relative files
     var loader = new RcLoader('.jshintrc', {
       lookup: true,
@@ -87,10 +88,21 @@ describe('RcLoader', function () {
         start[path] = now();
         var done = function (err, contents) {
           stop[path] = now();
+          onAfterDone.splice(0).forEach(function (fn) { fn(); });
           _cb(err, JSON.parse('' + contents));
         };
-        // wrap done in a call to setTimeout
-        if (path === fixtures.json) done = _.partial(setTimeout, done, 30);
+
+        if (path === fixtures.json) {
+          done = (function (_done) {
+            return function waitUntilRcDone(err, contents) {
+              // only call the original _done function once rc is done
+              if (stop[fixtures.rc]) _done(err, contents);
+              // if not done yet, delay again
+              else onAfterDone.push(waitUntilRcDone);
+            };
+          }(done));
+        }
+
         fs.readFile(path, done);
       }
     });
