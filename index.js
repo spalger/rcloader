@@ -1,7 +1,6 @@
 module.exports = RcLoader;
 
 var path = require('path');
-var fs = require('fs');
 var _ = require('lodash');
 var RcFinder = require('rcfinder');
 
@@ -12,27 +11,37 @@ function RcLoader(name, userConfig, finderConfig) {
   if (!name)
     throw new TypeError('Specify a name for your config files');
 
-  var config;
+  finderConfig = _.isObject(finderConfig) ? finderConfig : {};
+
+  var config = {};
+  var configPending = false;
+  var lookup = userConfig && userConfig.lookup !== void 0 ? !!userConfig.lookup : true;
+  var finder = new RcFinder(name, finderConfig);
 
   if (typeof userConfig === 'string') {
-    config = {
-      defaultFile: userConfig,
-      lookup: false
-    };
+    lookup = false;
+    config.defaultFile = userConfig;
   } else {
-    config = _.defaults({}, userConfig || {}, {
-      lookup: true
-    });
+    _.assign(config, userConfig || {});
   }
 
   if (config.defaultFile) {
-    _.defaults(config, JSON.parse(fs.readFileSync(config.defaultFile)));
-  }
+    if (finder.canLoadSync) {
+      _.assign(config, finder.get(config.defaultFile));
+    } else {
+      // push callbacks here that need to wait for config to load
+      configPending = [];
+      // force the async loader
+      finder.get(config.defaultFile, function (err, defaults) {
+        if (err) throw err;
+        _.assign(config, defaults);
 
-  // setup the finder if we need it
-  var finder;
-  if (config.lookup) {
-    finder = new RcFinder(name, finderConfig);
+        // clear the configPending queue
+        var cbs = configPending;
+        configPending = null;
+        cbs.forEach(function (cb) { cb(); });
+      });
+    }
   }
 
   // these shouldn't be a part of the final config
@@ -45,13 +54,21 @@ function RcLoader(name, userConfig, finderConfig) {
 
     function respond(err, configFile) {
       if (err && !sync) return cb(err);
+
+      // the config has not loaded yet, delay our response
+      // until it is
+      if (!sync && configPending) {
+        return configPending.push(function () {
+          respond(err, configFile);
+        });
+      }
       configFile = _.assign(configFile || {}, config);
 
       if (sync) return configFile;
       cb(void 0, configFile);
     }
 
-    if (!finder) {
+    if (!lookup) {
       if (sync) return respond();
       return process.nextTick(respond);
     }

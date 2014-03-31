@@ -1,17 +1,18 @@
 var RcLoader = require('../');
 var fs = require('fs');
 var _ = require('lodash');
-require('should');
+var should = require('should');
 
 var fixtures = {
   root: __dirname + '/fixtures/foo/foo/foo/foo/',
   json: __dirname + '/fixtures/foo/bar.json',
   text: __dirname + '/fixtures/foo/foo/.baz',
-  jshintrc: JSON.parse(fs.readFileSync(__dirname + '/.jshintrc')),
+  rc: __dirname + '/.jshintrc',
   barJson: {
     baz: 'bog'
   }
 };
+fixtures.jshintrc = JSON.parse(fs.readFileSync(fixtures.rc));
 
 describe('RcLoader', function () {
   it('loads a config file relative to another file', function () {
@@ -65,5 +66,53 @@ describe('RcLoader', function () {
       done();
     });
     count ++;
+  });
+
+  it('waits for the config to load before responding', function (done) {
+    // write the time that different paths are looked-up and complete
+    var start = {};
+    var stop = {};
+
+    var now = function () {
+      var t = process.hrtime();
+      return t[0] * 1000 + t[1] / 1000;
+    };
+
+    // loader with a defaults file which also looks up relative files
+    var loader = new RcLoader('.jshintrc', {
+      lookup: true,
+      defaultFile: fixtures.json
+    }, {
+      loader: function (path, _cb) {
+        start[path] = now();
+        var done = function (err, contents) {
+          stop[path] = now();
+          _cb(err, JSON.parse('' + contents));
+        };
+        // wrap done in a call to setTimeout
+        if (path === fixtures.json) done = _.partial(setTimeout, done, 30);
+        fs.readFile(path, done);
+      }
+    });
+
+    loader.for(fixtures.json, function (err, config) {
+      should.not.exist(err);
+
+      // bar.json file should have loaded successfully
+      should.exist(start[fixtures.json]);
+      should.exist(stop[fixtures.json]);
+
+      // .jshintrc file should have loaded successfully
+      should.exist(start[fixtures.rc]);
+      should.exist(stop[fixtures.rc]);
+
+      // .jshintrc file should have finished loading before the config
+      stop[fixtures.rc].should.be.lessThan(stop[fixtures.json]);
+
+      // but config should still include the defaultFile
+      config.should.include(fixtures.barJson);
+
+      done();
+    });
   });
 });
