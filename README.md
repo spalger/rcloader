@@ -1,6 +1,6 @@
 # rcloader
 
-[![Travis CI](https://travis-ci.org/spenceralger/rcloader.png)](https://travis-ci.org/spenceralger/rcloader)
+[![Travis CI](https://travis-ci.org/spenceralger/rcloader.svg)](https://travis-ci.org/spenceralger/rcloader)
 
 For build system plugins that need to fetch relative config files (like .jshintrc).
 
