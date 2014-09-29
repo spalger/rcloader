@@ -9,7 +9,8 @@ var fixtures = {
   text: __dirname + '/fixtures/foo/foo/.baz',
   rc: __dirname + '/.jshintrc',
   barJson: {
-    baz: 'bog'
+    baz: 'bog',
+    strict: true
   }
 };
 fixtures.jshintrc = JSON.parse(fs.readFileSync(fixtures.rc));
@@ -122,8 +123,11 @@ describe('RcLoader', function () {
       // .jshintrc file should have finished loading before the config
       stop[fixtures.rc].should.be.lessThan(stop[fixtures.json]);
 
-      // but config should still include the defaultFile
-      config.should.include(fixtures.barJson);
+      // but config should still include the non-overriden property
+      config.baz.should.equal(fixtures.barJson.baz);
+
+      // and config should have strict overriden
+      config.strict.should.equal(fixtures.jshintrc.strict);
 
       done();
     });
