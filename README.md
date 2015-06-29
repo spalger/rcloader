@@ -26,7 +26,7 @@ var RcLoader = require('rcloader');
 var map = require('map-stream');
 
 module.exports = function MyGulpPlugin(options) {
-  var rcLoader = new RcFinder('.configfilename', options);
+  var rcLoader = new RcLoader('.configfilename', options);
 
   return map(function (file, cb) {
     // get the options for this file specifically
@@ -46,7 +46,7 @@ var fileOpts = rcLoader.for(file.path, options);
 ```
 
 ## Options
-The second argument to the `RcFinder` constructor should be the options that plugin consumers define, and they can take can take a few different forms.
+The second argument to the `RcLoader` constructor should be the options that plugin consumers define, and they can take can take a few different forms.
 
 **If the user specifies a string**, it is used as a path to the only config file that they care about. Calling `rcLoader.for(path)` will always return a copy of the config file at that path.
 
