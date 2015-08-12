@@ -6,7 +6,7 @@ For build system plugins that need to fetch relative config files (like .jshintr
 
 ## Features
   - Find the closest config file (like .jshintrc) relative to the file you are linting
-  - Lookups are cahched to limit IO operations
+  - Lookups are cached to limit IO operations
   - Accepts input directly from plugin consumers to
     - specifiy a file that should always be used
     - specify overrides
