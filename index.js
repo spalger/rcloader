@@ -62,7 +62,14 @@ function RcLoader(name, userConfig, finderConfig) {
           respond(err, configFile);
         });
       }
-      configFile = _.merge(config, configFile || {});
+      var mergeCustomizer = function(objVal, srcVal, key, obj, src) {
+        if (_.has(obj, key) && obj !== config) {
+          // allow user-specified configurations to take
+          // precedence over those in the config file
+          return obj[key];
+        }
+      };
+      configFile = _.merge(config, configFile || {}, mergeCustomizer);
 
       if (sync) return configFile;
       cb(void 0, configFile);
