@@ -25,8 +25,8 @@ function RcLoader(name, userConfig, finderConfig) {
     _.assign(config, userConfig || {});
   }
   
-  var hasDefaultFile = (config.defaultFile !== undefined); 
-  if (hasDefaultFile) {
+  var defaultFileGiven = (config.defaultFile !== undefined); 
+  if (defaultFileGiven) {
     if (finder.canLoadSync) {
       _.assign(config, finder.get(config.defaultFile));
     } else {
@@ -63,15 +63,13 @@ function RcLoader(name, userConfig, finderConfig) {
           respond(err, configFile);
         });
       }
-      var mergeCustomizer = function(objVal, srcVal, key, obj, src) {
-        if (_.has(obj, key) && !hasDefaultFile) {
-          // allow user-specified configurations at each level
-          // to take precedence over those in the config file
-          return obj[key];
-        }
-      };
-      configFile = _.merge(config, configFile || {}, mergeCustomizer);
-
+    if (defaultFileGiven) {
+      // treat config as the default configuration
+      configFile = _.merge(config, configFile || {});
+    } else {
+      // treat configFile as the default configuration
+      configFile = _.merge(configFile || {}, config);
+    }
       if (sync) return configFile;
       cb(void 0, configFile);
     }
