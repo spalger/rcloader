@@ -8,11 +8,8 @@ var fixtures = {
   json: __dirname + '/fixtures/foo/bar.json',
   text: __dirname + '/fixtures/foo/foo/.baz',
   rc: __dirname + '/.jshintrc',
-  barJson: {
-    baz: 'bog',
-    strict: true
-  }
 };
+fixtures.barJson = JSON.parse(fs.readFileSync(fixtures.json));
 fixtures.jshintrc = JSON.parse(fs.readFileSync(fixtures.rc));
 
 describe('RcLoader', function () {
