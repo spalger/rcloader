@@ -37,7 +37,35 @@ describe('RcLoader', function () {
     var loader = new RcLoader('.baz', { from: 'defaults' });
     loader.for(fixtures.root).should.eql({
       baz: 'poop',
-      from: 'defaults'
+      from: 'defaults',
+      qux: {
+        fart: false,
+        smell: {
+          good: true
+        }
+      }
+    });
+  });
+  
+  it('recursively merges in specified default values', function () {
+    var loader = new RcLoader('.baz', { 
+      from: 'defaults', 
+      qux: {
+        fart: true, 
+        smell: {
+          good: false
+        }
+      }
+    });
+    loader.for(fixtures.root).should.eql({
+      baz: 'poop',
+      from: 'defaults',
+      qux: {
+        fart: true,
+        smell: {
+          good: false
+        }
+      }
     });
   });
 
