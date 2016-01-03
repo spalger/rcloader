@@ -64,12 +64,10 @@ function RcLoader(name, userConfig, finderConfig) {
         });
       }
       var mergeCustomizer = function(objVal, srcVal, key, obj, src) {
-        if (_.has(obj, key)) {
-          if (!hasDefaultFile) {
-            // allow user-specified configurations at each level
-            // to take precedence over those in the config file
-            return obj[key];
-          }
+        if (_.has(obj, key) && !hasDefaultFile) {
+          // allow user-specified configurations at each level
+          // to take precedence over those in the config file
+          return obj[key];
         }
       };
       configFile = _.merge(config, configFile || {}, mergeCustomizer);
