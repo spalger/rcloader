@@ -30,20 +30,6 @@ describe('RcLoader', function () {
     count.should.eql(1);
   });
 
-  it('merges in root-level inline configuration values', function () {
-    var loader = new RcLoader('.baz', { from: 'defaults' });
-    loader.for(fixtures.root).should.eql({
-      baz: 'poop',
-      from: 'defaults',
-      qux: {
-        fart: false,
-        smell: {
-          good: true
-        }
-      }
-    });
-  });
-  
   it('merges in all levels of inline configuration values', function () {
     var loader = new RcLoader('.baz', {
       baz: 'bar', 
