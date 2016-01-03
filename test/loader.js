@@ -30,7 +30,7 @@ describe('RcLoader', function () {
     count.should.eql(1);
   });
 
-  it('merges in root-level specified values not in the config file', function () {
+  it('merges in root-level inline configuration values', function () {
     var loader = new RcLoader('.baz', { from: 'defaults' });
     loader.for(fixtures.root).should.eql({
       baz: 'poop',
@@ -44,7 +44,7 @@ describe('RcLoader', function () {
     });
   });
   
-  it('merges in specified values not in the config file recursively', function () {
+  it('merges in all levels of inline configuration values', function () {
     var loader = new RcLoader('.baz', {
       baz: 'bar', 
       from: 'defaults', 
@@ -152,7 +152,7 @@ describe('RcLoader', function () {
       // but config should still include the non-overriden property
       config.baz.should.equal(fixtures.barJson.baz);
 
-      // and config should have strict overriden
+      // and config should have strict overridden
       config.strict.should.equal(fixtures.jshintrc.strict);
 
       done();
