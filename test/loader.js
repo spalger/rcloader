@@ -33,7 +33,7 @@ describe('RcLoader', function () {
     count.should.eql(1);
   });
 
-  it('merges in specified default values', function () {
+  it('merges in root-level specified values not in the config file', function () {
     var loader = new RcLoader('.baz', { from: 'defaults' });
     loader.for(fixtures.root).should.eql({
       baz: 'poop',
@@ -47,7 +47,7 @@ describe('RcLoader', function () {
     });
   });
   
-  it('recursively merges in specified default values', function () {
+  it('merges in specified values not in the config file recursively', function () {
     var loader = new RcLoader('.baz', {
       baz: 'bar', 
       from: 'defaults', 
