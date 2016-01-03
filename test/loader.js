@@ -48,7 +48,8 @@ describe('RcLoader', function () {
   });
   
   it('recursively merges in specified default values', function () {
-    var loader = new RcLoader('.baz', { 
+    var loader = new RcLoader('.baz', {
+      baz: 'bar', 
       from: 'defaults', 
       qux: {
         fart: true, 
@@ -58,7 +59,7 @@ describe('RcLoader', function () {
       }
     });
     loader.for(fixtures.root).should.eql({
-      baz: 'poop',
+      baz: 'bar',
       from: 'defaults',
       qux: {
         fart: true,
@@ -94,7 +95,7 @@ describe('RcLoader', function () {
       opts.should.eql(_.merge({}, fixtures.jshintrc, fixtures.barJson));
       done();
     });
-    count ++;
+    count++;
   });
 
   it('waits for the config to load before responding', function (done) {
