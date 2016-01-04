@@ -63,13 +63,12 @@ function RcLoader(name, userConfig, finderConfig) {
           respond(err, configFile);
         });
       }
-    if (defaultFileGiven) {
-      // treat config as the default configuration
-      configFile = _.merge(config, configFile || {});
-    } else {
-      // treat configFile as the default configuration
-      configFile = _.merge(configFile || {}, config);
-    }
+      configFile = configFile || {};
+      if (defaultFileGiven) {
+        configFile = _.merge(config, configFile);
+      } else {
+        configFile = _.merge(configFile, config);
+      }
       if (sync) return configFile;
       cb(void 0, configFile);
     }
