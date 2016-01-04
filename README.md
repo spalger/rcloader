@@ -19,7 +19,7 @@ npm install rcloader
 ```
 
 ## Use
-This plugin was written to specifcally address this issue for a couple gulp plugins.
+This plugin was written to specifically address this issue for a couple of gulp plugins.
 
 ### within a gulp plugin
 ```js
