@@ -56,4 +56,4 @@ The second argument to the `RcLoader` constructor should be the options that plu
 - `lookup`, Boolean: Find the closest config file each time `.for()` is called. default is true, unless `options` is a path.
 - `defaultFile`, string: Specify a default configuration file.
 
-If `defaultFile` is not specified, any values not not equal to `lookup` will override values found in the config file.
+If `defaultFile` is not specified, all values except `lookup` will override values found in the config file.
