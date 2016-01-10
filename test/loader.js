@@ -8,11 +8,8 @@ var fixtures = {
   json: __dirname + '/fixtures/foo/bar.json',
   text: __dirname + '/fixtures/foo/foo/.baz',
   rc: __dirname + '/.jshintrc',
-  barJson: {
-    baz: 'bog',
-    strict: true
-  }
 };
+fixtures.barJson = JSON.parse(fs.readFileSync(fixtures.json));
 fixtures.jshintrc = JSON.parse(fs.readFileSync(fixtures.rc));
 
 describe('RcLoader', function () {
@@ -33,11 +30,26 @@ describe('RcLoader', function () {
     count.should.eql(1);
   });
 
-  it('merges in specified default values', function () {
-    var loader = new RcLoader('.baz', { from: 'defaults' });
+  it('merges in all levels of inline configuration values', function () {
+    var loader = new RcLoader('.baz', {
+      baz: 'bar', 
+      from: 'defaults', 
+      qux: {
+        fart: true, 
+        smell: {
+          good: false
+        }
+      }
+    });
     loader.for(fixtures.root).should.eql({
-      baz: 'poop',
-      from: 'defaults'
+      baz: 'bar',
+      from: 'defaults',
+      qux: {
+        fart: true,
+        smell: {
+          good: false
+        }
+      }
     });
   });
 
@@ -66,7 +78,7 @@ describe('RcLoader', function () {
       opts.should.eql(_.merge({}, fixtures.jshintrc, fixtures.barJson));
       done();
     });
-    count ++;
+    count++;
   });
 
   it('waits for the config to load before responding', function (done) {
@@ -126,7 +138,7 @@ describe('RcLoader', function () {
       // but config should still include the non-overriden property
       config.baz.should.equal(fixtures.barJson.baz);
 
-      // and config should have strict overriden
+      // and config should have strict overridden
       config.strict.should.equal(fixtures.jshintrc.strict);
 
       done();

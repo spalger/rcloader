@@ -9,6 +9,7 @@ For build system plugins that need to fetch relative config files (like .jshintr
   - Lookups are cached to limit IO operations
   - Accepts input directly from plugin consumers to
     - specifiy a file that should always be used
+    - specify a default file
     - specify overrides
     - disable file lookup
 
@@ -18,7 +19,7 @@ npm install rcloader
 ```
 
 ## Use
-This plugin was written to specifcally address this issue for a couple gulp plugins.
+This plugin was written to specifically address this issue for a couple of gulp plugins.
 
 ### within a gulp plugin
 ```js
@@ -46,10 +47,13 @@ var fileOpts = rcLoader.for(file.path, options);
 ```
 
 ## Options
-The second argument to the `RcLoader` constructor should be the options that plugin consumers define, and they can take can take a few different forms.
+The second argument to the `RcLoader` constructor should be the options that plugin consumers define, and it can take a few different forms.
 
 **If the user specifies a string**, it is used as a path to the only config file that they care about. Calling `rcLoader.for(path)` will always return a copy of the config file at that path.
 
-**If the user specifies an object**, the following keys will be striped from it and the remaining values will override values found in the config files.
+**If the user specifies an object**, the following keys will be stripped from it:
 
- - `lookup`, Boolean, Find the closest config file each time `.for()` is called. default is true, unless config is a path.
+- `lookup`, Boolean: Find the closest config file each time `.for()` is called. default is true, unless `options` is a path.
+- `defaultFile`, string: Specify a default configuration file.
+
+If `defaultFile` is not specified, any values not not equal to `lookup` will override values found in the config file.

@@ -24,8 +24,9 @@ function RcLoader(name, userConfig, finderConfig) {
   } else {
     _.assign(config, userConfig || {});
   }
-
-  if (config.defaultFile) {
+  
+  var defaultFileGiven = (config.defaultFile !== undefined); 
+  if (defaultFileGiven) {
     if (finder.canLoadSync) {
       _.assign(config, finder.get(config.defaultFile));
     } else {
@@ -62,8 +63,12 @@ function RcLoader(name, userConfig, finderConfig) {
           respond(err, configFile);
         });
       }
-      configFile = _.merge(config, configFile || {});
-
+      configFile = configFile || {};
+      if (defaultFileGiven) {
+        configFile = _.merge(config, configFile);
+      } else {
+        configFile = _.merge(configFile, config);
+      }
       if (sync) return configFile;
       cb(void 0, configFile);
     }
