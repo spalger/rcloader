@@ -1,7 +1,9 @@
 module.exports = RcLoader;
 
 var path = require('path');
-var _ = require('lodash');
+var assign = require('lodash.assign');
+var isObject = require('lodash.isobject');
+var merge = require('lodash.merge');
 var RcFinder = require('rcfinder');
 
 function RcLoader(name, userConfig, finderConfig) {
@@ -11,7 +13,7 @@ function RcLoader(name, userConfig, finderConfig) {
   if (!name)
     throw new TypeError('Specify a name for your config files');
 
-  finderConfig = _.isObject(finderConfig) ? finderConfig : {};
+  finderConfig = isObject(finderConfig) ? finderConfig : {};
 
   var config = {};
   var configPending = false;
@@ -22,20 +24,20 @@ function RcLoader(name, userConfig, finderConfig) {
     lookup = false;
     config.defaultFile = userConfig;
   } else {
-    _.assign(config, userConfig || {});
+    assign(config, userConfig || {});
   }
-  
-  var defaultFileGiven = (config.defaultFile !== undefined); 
+
+  var defaultFileGiven = (config.defaultFile !== undefined);
   if (defaultFileGiven) {
     if (finder.canLoadSync) {
-      _.assign(config, finder.get(config.defaultFile));
+      assign(config, finder.get(config.defaultFile));
     } else {
       // push callbacks here that need to wait for config to load
       configPending = [];
       // force the async loader
       finder.get(config.defaultFile, function (err, defaults) {
         if (err) throw err;
-        _.assign(config, defaults);
+        assign(config, defaults);
 
         // clear the configPending queue
         var cbs = configPending;
@@ -65,9 +67,9 @@ function RcLoader(name, userConfig, finderConfig) {
       }
       configFile = configFile || {};
       if (defaultFileGiven) {
-        configFile = _.merge(config, configFile);
+        configFile = merge(config, configFile);
       } else {
-        configFile = _.merge(configFile, config);
+        configFile = merge(configFile, config);
       }
       if (sync) return configFile;
       cb(void 0, configFile);
