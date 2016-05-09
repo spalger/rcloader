@@ -1,6 +1,6 @@
 {
   "name": "rcloader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "For build system plugins that need to fetch relative config files (like .jshintrc).",
   "main": "index.js",
   "scripts": {
