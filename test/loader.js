@@ -1,6 +1,6 @@
 var RcLoader = require('../');
 var fs = require('fs');
-var _ = require('lodash');
+var merge = require('lodash.merge');
 var should = require('should');
 
 var fixtures = {
@@ -32,10 +32,10 @@ describe('RcLoader', function () {
 
   it('merges in all levels of inline configuration values', function () {
     var loader = new RcLoader('.baz', {
-      baz: 'bar', 
-      from: 'defaults', 
+      baz: 'bar',
+      from: 'defaults',
       qux: {
-        fart: true, 
+        fart: true,
         smell: {
           good: false
         }
@@ -75,7 +75,7 @@ describe('RcLoader', function () {
     var count = 0;
     loader.for(fixtures.root, function (err, opts) {
       count.should.eql(1);
-      opts.should.eql(_.merge({}, fixtures.jshintrc, fixtures.barJson));
+      opts.should.eql(merge({}, fixtures.jshintrc, fixtures.barJson));
       done();
     });
     count++;
@@ -106,7 +106,7 @@ describe('RcLoader', function () {
         };
 
         if (path === fixtures.json) {
-          done = _.partial(function forceCompletionOrder(origDone, err, contents) {
+          done = (function forceCompletionOrder(origDone, err, contents) {
             (function checkThatRcStopped() {
               // only call the original done function once rc is done
               if (stop[fixtures.rc]) origDone(err, contents);
@@ -114,7 +114,7 @@ describe('RcLoader', function () {
               // if not done yet then reschedule
               else onAfterDone.push(checkThatRcStopped);
             }());
-          }, done);
+          }).bind(null, done);
         }
 
         fs.readFile(path, done);
