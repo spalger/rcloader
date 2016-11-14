@@ -65,12 +65,15 @@ function RcLoader(name, userConfig, finderConfig) {
           respond(err, configFile);
         });
       }
-      configFile = configFile || {};
+
+      // merge these into a fresh object to ensure that configFile
+      // is never the same object.
       if (defaultFileGiven) {
-        configFile = merge(config, configFile);
+        configFile = merge({}, config, configFile || {});
       } else {
-        configFile = merge(configFile, config);
+        configFile = merge({}, configFile || {}, config);
       }
+
       if (sync) return configFile;
       cb(void 0, configFile);
     }

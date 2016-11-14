@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/spenceralger/rcloader",
   "dependencies": {
-    "lodash.assign": "^4.0.8",
+    "lodash.assign": "^4.2.0",
     "lodash.isobject": "^3.0.2",
-    "lodash.merge": "^4.3.5",
+    "lodash.merge": "^4.6.0",
     "rcfinder": "^0.1.6"
   },
   "devDependencies": {

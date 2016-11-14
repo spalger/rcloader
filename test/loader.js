@@ -32,26 +32,48 @@ describe('RcLoader', function () {
 
   it('merges in all levels of inline configuration values', function () {
     var loader = new RcLoader('.baz', {
-      baz: 'bar',
-      from: 'defaults',
-      qux: {
-        fart: true,
-        smell: {
-          good: false
+      A: 'not A',
+      B: {
+        C: 1,
+        D: {
+          E: false
         }
       }
     });
+
     loader.for(fixtures.root).should.eql({
-      baz: 'bar',
-      from: 'defaults',
-      qux: {
-        fart: true,
-        smell: {
-          good: false
+      A: 'not A', // overriden
+      AA: 'still A', // from the config file
+      B: {
+        C: 1, // overridden
+        CC: 'still C',  // from the config file
+        D: {
+          E: false // overridden
         }
       }
     });
   });
+
+  it('clones input and does not reuse it', function () {
+    var defaults = {
+      a: {
+        b: {
+          c: {
+            d: 100
+          }
+        }
+      }
+    }
+
+    var loader = new RcLoader('.baz', defaults)
+    var firstRun = loader.for(fixtures.root)
+    defaults.a.b.c.d = 500
+    var loader2 = new RcLoader('.baz', defaults)
+    var secondRun = loader2.for(fixtures.root)
+
+    firstRun.a.b.c.d.should.equal(100)
+    secondRun.a.b.c.d.should.equal(500)
+  })
 
   it('accepts a string which disables lookup and always responds with it\'s contents', function () {
     var loader = new RcLoader('.jshintrc', fixtures.json);

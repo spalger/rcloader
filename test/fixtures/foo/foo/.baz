@@ -1,9 +1,11 @@
 {
-  "baz": "poop",
-  "qux": {
-    "fart": false,
-    "smell": {
-      "good": true
+  "A": "A",
+  "AA": "still A",
+  "B": {
+    "C": 0,
+    "CC": "still C",
+    "D": {
+      "E": true
     }
   }
 }
